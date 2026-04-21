@@ -1,14 +1,11 @@
-name: CD Pipeline
+name: CD
 
 on:
-  workflow_run:
-    workflows: ["CI Pipeline"]
-    types:
-      - completed
+  push:
+    branches: [main]
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +18,8 @@ jobs:
       - run: npm install
       - run: npm run build
 
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
+      - run: npm install -g netlify-cli
 
-      - name: Deploy to Netlify
-        run: netlify deploy --dir=dist --prod --auth=$NETLIFY_AUTH_TOKEN
+      - run: netlify deploy --dir=dist --prod --auth=$NETLIFY_AUTH_TOKEN
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
